@@ -60,7 +60,8 @@ namespace Grafs
             }
             if(e.KeyCode == Keys.Delete)
             {
-                for (int i = 0, j=0; i < st.count; i++, j++)
+                int amount = st.count;
+                for (int i = 0, j=0; i < amount; i++, j++)
                 {
                     if(st.getObj(j).Select())
                     {
