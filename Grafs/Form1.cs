@@ -30,11 +30,17 @@ namespace Grafs
 
         private void pb1_MouseClick(object sender, MouseEventArgs e)
         {
+            if(cb1.Checked == true) { 
             st.add(new CCircle(e));
             pb1.Invalidate();
+            }
+            else
+            {
+
+            }
         }
 
-        //
+        
 
     }
 
@@ -43,6 +49,7 @@ namespace Grafs
         public int x;
         public int y;
         public int radius = 30;
+        public bool selected = false;
 
         public CCircle(MouseEventArgs e)
         {
@@ -52,7 +59,21 @@ namespace Grafs
 
         public void draw(PaintEventArgs e)
         {
-            e.Graphics.DrawEllipse(new Pen(Brushes.Black, 3), (x - radius), (y - radius), 2 * radius, 2 * radius);
+            if(selected == false)
+                e.Graphics.DrawEllipse(new Pen(Brushes.Black, 3), (x - radius), (y - radius), 2 * radius, 2 * radius);
+            else
+                e.Graphics.DrawEllipse(new Pen(Brushes.Red, 3), (x - radius), (y - radius), 2 * radius, 2 * radius);
+        }
+
+        public bool Select()
+        {
+            return selected;
+        }
+
+        public bool hit(MouseEventArgs e) {
+            if (Math.Sqrt((e.X - x)*(e.X - x) + (e.Y - y)*(e.Y - y)) <= 30)
+                return true;
+            return false;
         }
     }
     class MyStorage
