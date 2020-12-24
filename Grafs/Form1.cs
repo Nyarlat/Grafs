@@ -36,7 +36,12 @@ namespace Grafs
             }
             else
             {
-
+                for (int i = st.count-1; i >= 0; i--)
+                {
+                    if (st.getObj(i).hit(e))
+                        st.getObj(i).Setselected(true);
+                }
+                pb1.Invalidate();
             }
         }
 
@@ -68,6 +73,11 @@ namespace Grafs
         public bool Select()
         {
             return selected;
+        }
+
+        public void Setselected(bool check)
+        {
+            selected = check;
         }
 
         public bool hit(MouseEventArgs e) {
