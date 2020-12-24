@@ -12,7 +12,7 @@ namespace Grafs
 {
     public partial class Form1 : Form
     {
-        MyStorage st = new MyStorage();
+        MyStorage st = new MyStorage(100);
         public Form1()
         {
             InitializeComponent();
@@ -28,6 +28,7 @@ namespace Grafs
             }
         }
 
+        bool check ;
         private void pb1_MouseClick(object sender, MouseEventArgs e)
         {
             if(cb1.Checked == true) { 
@@ -36,17 +37,45 @@ namespace Grafs
             }
             else
             {
+                bool one = true;
                 for (int i = st.count-1; i >= 0; i--)
                 {
-                    if (st.getObj(i).hit(e))
+                    if (check == false)
+                        st.getObj(i).Setselected(false);
+                    if (st.getObj(i).hit(e) && one == true)
+                    {
+                        one = false;
                         st.getObj(i).Setselected(true);
+                    }
                 }
                 pb1.Invalidate();
             }
         }
-
         
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                check = true;
+            }
+            if(e.KeyCode == Keys.Delete)
+            {
+                for (int i = 0, j=0; i < st.count; i++, j++)
+                {
+                    if(st.getObj(j).Select())
+                    {
+                        st.del(j);
+                        j--;
+                    }
+                    pb1.Invalidate();
+                }
+            }
+        }
 
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            check = false;
+        }
     }
 
     class CCircle
@@ -90,10 +119,16 @@ namespace Grafs
     {
         public CCircle[] objects;
         public int count;
-        public MyStorage()
+        public int size;
+        public MyStorage(int _size)
         {
-            objects = new CCircle[100];
+            size = _size;
+            objects = new CCircle[_size];
             count = 0;
+        }
+        public int getSize()
+        {
+            return size;
         }
         public void add(CCircle NewObj)
         {

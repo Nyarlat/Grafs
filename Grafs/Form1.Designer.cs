@@ -64,8 +64,11 @@
             this.ClientSize = new System.Drawing.Size(1006, 574);
             this.Controls.Add(this.cb1);
             this.Controls.Add(this.pb1);
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pb1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
