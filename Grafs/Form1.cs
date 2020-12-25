@@ -18,21 +18,19 @@ namespace Grafs
             InitializeComponent();
         }
 
-        
-
         private void pb1_Paint(object sender, PaintEventArgs e)
         {
             for (int i = 0; i < st.count; i++)
             {
-                st.getObj(i).draw(e);
+                st.getObj(i).draw(e.Graphics);
             }
         }
 
-        bool check ;
+        bool check;
         private void pb1_MouseClick(object sender, MouseEventArgs e)
         {
             if(cb1.Checked == true) { 
-            st.add(new CCircle(e));
+            st.add(new CCircle(e.X, e.Y));
             pb1.Invalidate();
             }
             else
@@ -85,19 +83,35 @@ namespace Grafs
         public int y;
         public int radius = 30;
         public bool selected = false;
+        Pen Mypen;
 
-        public CCircle(MouseEventArgs e)
+        public CCircle(int _x, int _y)
         {
-            x = e.X;
-            y = e.Y;
+            x = _x;
+            y = _y;
         }
 
-        public void draw(PaintEventArgs e)
+        public int GetX()
         {
-            if(selected == false)
-                e.Graphics.DrawEllipse(new Pen(Brushes.Black, 3), (x - radius), (y - radius), 2 * radius, 2 * radius);
+            return x;
+        }
+
+        public int GetY()
+        {
+            return y;
+        }
+
+        public void draw(Graphics e)
+        {
+            if (selected == false)
+            {
+                Mypen = new Pen(Color.Black, 3);
+            }
             else
-                e.Graphics.DrawEllipse(new Pen(Brushes.Red, 3), (x - radius), (y - radius), 2 * radius, 2 * radius);
+            {
+                Mypen = new Pen(Color.Red, 3);
+            }
+            e.DrawEllipse(Mypen, (x - radius), (y - radius), 2 * radius, 2 * radius);
         }
 
         public bool Select()
@@ -105,9 +119,9 @@ namespace Grafs
             return selected;
         }
 
-        public void Setselected(bool check)
+        public void Setselected(bool checkS)
         {
-            selected = check;
+            selected = checkS;
         }
 
         public bool hit(MouseEventArgs e) {
@@ -126,10 +140,6 @@ namespace Grafs
             size = _size;
             objects = new CCircle[_size];
             count = 0;
-        }
-        public int getSize()
-        {
-            return size;
         }
         public void add(CCircle NewObj)
         {
