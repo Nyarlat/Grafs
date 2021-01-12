@@ -12,26 +12,38 @@ namespace Grafs
 {
     public partial class Form1 : Form
     {
-        MyStorage st = new MyStorage(100);
+        MyStorage<Shape> st = new MyStorage<Shape>(100);
+        Bitmap bm;
+        Graphics Paper;
         public Form1()
         {
             InitializeComponent();
+            bm = new Bitmap(pb1.Width - 1, pb1.Height - 1);
+            Paper = Graphics.FromImage(bm);
+            pb1.Image = bm;
         }
 
         private void pb1_Paint(object sender, PaintEventArgs e)
         {
+            Paper.Clear(Color.Ivory);
             for (int i = 0; i < st.count; i++)
             {
-                st.getObj(i).draw(e.Graphics);
+                st.getObj(i).draw(Paper);
             }
+            pb1.Image = bm;
         }
 
         bool check;
         private void pb1_MouseClick(object sender, MouseEventArgs e)
         {
-            if(cb1.Checked == true) { 
-            st.add(new CCircle(e.X, e.Y));
-            pb1.Invalidate();
+            if(cb1.Checked == true) {
+                if (rdCircle.Checked)
+                st.add(new CCircle(e.X, e.Y, pb1.Width, pb1.Height));
+                else if (rdSquare.Checked)
+                st.add(new Square(e.X, e.Y, pb1.Width, pb1.Height));
+                else
+                st.add(new Triangle(e.X, e.Y, pb1.Width, pb1.Height));
+                pb1.Invalidate();
             }
             else
             {
@@ -40,7 +52,7 @@ namespace Grafs
                 {
                     if (check == false)
                         st.getObj(i).Setselected(false);
-                    if (st.getObj(i).hit(e) && one == true)
+                    if (st.getObj(i).hit(e.X, e.Y) && one == true)
                     {
                         one = false;
                         st.getObj(i).Setselected(true);
@@ -56,6 +68,8 @@ namespace Grafs
             {
                 check = true;
             }
+
+
             if(e.KeyCode == Keys.Delete)
             {
                 int amount = st.count;
@@ -69,94 +83,122 @@ namespace Grafs
                     pb1.Invalidate();
                 }
             }
+
+
+            if (e.KeyCode == Keys.Up)
+            {
+                for (int i = 0; i < st.count; i++)
+                {
+                    if (st.getObj(i).Select())
+                    {
+                        st.getObj(i).Move(0, -1);
+                        st.getObj(i).Update();
+                    }
+                }
+            }
+
+            if (e.KeyCode == Keys.Down)
+            {
+                for (int i = 0; i < st.count; i++)
+                {
+                    if (st.getObj(i).Select())
+                    {
+                        st.getObj(i).Move(0, 1);
+                        st.getObj(i).Update();
+                    }
+                }
+            }
+
+            if (e.KeyCode == Keys.Right)
+            {
+                for (int i = 0; i < st.count; i++)
+                {
+                    if (st.getObj(i).Select())
+                    {
+                        st.getObj(i).Move(1, 0);
+                        st.getObj(i).Update();
+                    }
+                }
+            }
+
+            if (e.KeyCode == Keys.Left)
+            {
+                for (int i = 0; i < st.count; i++)
+                {
+                    if (st.getObj(i).Select())
+                    {
+                        st.getObj(i).Move(-1, 0);
+                        st.getObj(i).Update();
+                    }
+                }
+            }
+
+            if (e.KeyCode == Keys.Add)
+            {
+                for (int i = 0; i < st.count; i++)
+                {
+                    if (st.getObj(i).Select())
+                    {
+                        st.getObj(i).changesize(1);
+                        st.getObj(i).Update();
+                    }
+                }
+            }
+
+            if (e.KeyCode == Keys.Subtract)
+            {
+                for (int i = 0; i < st.count; i++)
+                {
+                    if (st.getObj(i).Select())
+                    {
+                        st.getObj(i).changesize(-1);
+                        st.getObj(i).Update();
+                    }
+                }
+            }
+
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             check = false;
         }
-    }
 
-    class CCircle
-    {
-        public int x;
-        public int y;
-        public int radius = 30;
-        public bool selected = false;
-        Pen Mypen;
-
-        public CCircle(int _x, int _y)
+        private void button1_Click(object sender, EventArgs e)
         {
-            x = _x;
-            y = _y;
-        }
-
-        public int GetX()
-        {
-            return x;
-        }
-
-        public int GetY()
-        {
-            return y;
-        }
-
-        public void draw(Graphics e)
-        {
-            if (selected == false)
+            for (int i = 0; i < st.count; i++)
             {
-                Mypen = new Pen(Color.Black, 3);
+                if (st.getObj(i).Select())
+                {
+                    st.getObj(i).RePaint(1);
+                    st.getObj(i).Update();
+                }
             }
-            else
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < st.count; i++)
             {
-                Mypen = new Pen(Color.Red, 3);
+                if (st.getObj(i).Select())
+                {
+                    st.getObj(i).RePaint(2);
+                    st.getObj(i).Update();
+                }
             }
-            e.DrawEllipse(Mypen, (x - radius), (y - radius), 2 * radius, 2 * radius);
         }
 
-        public bool Select()
+        private void button3_Click(object sender, EventArgs e)
         {
-            return selected;
-        }
-
-        public void Setselected(bool checkS)
-        {
-            selected = checkS;
-        }
-
-        public bool hit(MouseEventArgs e) {
-            if (Math.Sqrt((e.X - x)*(e.X - x) + (e.Y - y)*(e.Y - y)) <= 30)
-                return true;
-            return false;
+            for (int i = 0; i < st.count; i++)
+            {
+                if (st.getObj(i).Select())
+                {
+                    st.getObj(i).RePaint(3);
+                    st.getObj(i).Update();
+                }
+            }
         }
     }
-    class MyStorage
-    {
-        public CCircle[] objects;
-        public int count;
-        public int size;
-        public MyStorage(int _size)
-        {
-            size = _size;
-            objects = new CCircle[_size];
-            count = 0;
-        }
-        public void add(CCircle NewObj)
-        {
-            objects[count] = NewObj;
-            count++;
-        }
-        public void del(int index)
-        {
-            for (int i = index; i < count - 1; i++)
-            {
-                objects[i] = objects[i + 1];
-            }
-            count--;
-        }
-        public CCircle getObj(int index)
-        {
-            return objects[index];
-        }
-    }
+    
 }
