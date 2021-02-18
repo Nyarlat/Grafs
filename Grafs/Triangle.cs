@@ -11,14 +11,20 @@ namespace Grafs
 {
     class Triangle: Shape
     {
-        public Triangle(int _x, int _y, int height, int widht)
+        public Triangle()
         {
-            S = new Rectangle(0, 0, widht, height);
+            code = "T";
+        }
+
+        public Triangle(int _x, int _y, RectangleF Rect)
+        {
+            MyOutSize = Rect;
             figure = new GraphicsPath();
             MyColor = 1;
             x = _x;
             y = _y;
             size = 60;
+            code = "T";
         }
 
 

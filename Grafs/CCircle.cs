@@ -13,14 +13,21 @@ namespace Grafs
 {
     class CCircle:Shape
     {
-        public CCircle(int _x, int _y, int height, int widht)
+        public CCircle()
         {
-            S = new Rectangle(0, 0, widht, height);
+            code = "C";
+        }
+        public CCircle(int _x, int _y,RectangleF Rect)
+        {
+            code = "C";
+            MyOutSize = Rect;
             figure = new GraphicsPath();
             MyColor = 1;
             x = _x;
             y = _y;
             size = 30;
+            Update();
+            CorrectOut();
         }
 
         public override void Update()

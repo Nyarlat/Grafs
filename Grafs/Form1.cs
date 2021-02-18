@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,15 +13,17 @@ namespace Grafs
 {
     public partial class Form1 : Form
     {
-        MyStorage<Shape> st = new MyStorage<Shape>(100);
+        MyStorage st = new MyStorage();
         Bitmap bm;
         Graphics Paper;
+        RectangleF Rect;
         public Form1()
         {
             InitializeComponent();
             bm = new Bitmap(pb1.Width - 1, pb1.Height - 1);
             Paper = Graphics.FromImage(bm);
             pb1.Image = bm;
+            Rect = new RectangleF(pb1.Location.X-160, pb1.Location.Y , pb1.Width - 10, pb1.Height - 10);
         }
 
         private void pb1_Paint(object sender, PaintEventArgs e)
@@ -38,11 +41,11 @@ namespace Grafs
         {
             if(cb1.Checked == true) {
                 if (rdCircle.Checked)
-                st.add(new CCircle(e.X, e.Y, pb1.Width, pb1.Height));
+                st.add(new CCircle(e.X, e.Y, Rect));
                 else if (rdSquare.Checked)
-                st.add(new Square(e.X, e.Y, pb1.Width, pb1.Height));
+                st.add(new Square(e.X, e.Y, Rect));
                 else
-                st.add(new Triangle(e.X, e.Y, pb1.Width, pb1.Height));
+                st.add(new Triangle(e.X, e.Y, Rect));
                 pb1.Invalidate();
             }
             else
@@ -84,76 +87,49 @@ namespace Grafs
                 }
             }
 
+            int dx=0;
+            int dy = 0;
+            int size = 0;
+            int color = 1;
 
-            if (e.KeyCode == Keys.Up)
+            switch (e.KeyCode)
             {
-                for (int i = 0; i < st.count; i++)
-                {
-                    if (st.getObj(i).Select())
-                    {
-                        st.getObj(i).Move(0, -1);
-                        st.getObj(i).Update();
-                    }
-                }
+                case Keys.W:
+                    dy = -1;
+                    break;
+                case Keys.S:
+                    dy = 1;
+                    break;
+                case Keys.D:
+                    dx = 1;
+                    break;
+                case Keys.A:
+                    dx = -1;
+                    break;
+                case Keys.Add:
+                    size = 1;
+                    break;
+                case Keys.Subtract:
+                    size = -1;
+                    break;
+                case Keys.D1:
+                    color = 1;
+                    break;
+                case Keys.D2:
+                    color = 2;
+                    break;
+                case Keys.D3:
+                    color = 3;
+                    break;
+                default: break;
             }
-
-            if (e.KeyCode == Keys.Down)
+            for (int i = 0; i < st.count; i++)
             {
-                for (int i = 0; i < st.count; i++)
+                if (st.getObj(i).Select())
                 {
-                    if (st.getObj(i).Select())
-                    {
-                        st.getObj(i).Move(0, 1);
-                        st.getObj(i).Update();
-                    }
-                }
-            }
-
-            if (e.KeyCode == Keys.Right)
-            {
-                for (int i = 0; i < st.count; i++)
-                {
-                    if (st.getObj(i).Select())
-                    {
-                        st.getObj(i).Move(1, 0);
-                        st.getObj(i).Update();
-                    }
-                }
-            }
-
-            if (e.KeyCode == Keys.Left)
-            {
-                for (int i = 0; i < st.count; i++)
-                {
-                    if (st.getObj(i).Select())
-                    {
-                        st.getObj(i).Move(-1, 0);
-                        st.getObj(i).Update();
-                    }
-                }
-            }
-
-            if (e.KeyCode == Keys.Add)
-            {
-                for (int i = 0; i < st.count; i++)
-                {
-                    if (st.getObj(i).Select())
-                    {
-                        st.getObj(i).changesize(1);
-                        st.getObj(i).Update();
-                    }
-                }
-            }
-
-            if (e.KeyCode == Keys.Subtract)
-            {
-                for (int i = 0; i < st.count; i++)
-                {
-                    if (st.getObj(i).Select())
-                    {
-                        st.getObj(i).changesize(-1);
-                        st.getObj(i).Update();
-                    }
+                    st.getObj(i).RePaint(color);
+                    st.getObj(i).Move(dx, dy);
+                    st.getObj(i).changesize(size);
                 }
             }
 
@@ -164,39 +140,51 @@ namespace Grafs
             check = false;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+        private void bGroup_Click(object sender, EventArgs e)
         {
+            CGroup shapes = new CGroup(15,Rect);
             for (int i = 0; i < st.count; i++)
             {
                 if (st.getObj(i).Select())
                 {
-                    st.getObj(i).RePaint(1);
-                    st.getObj(i).Update();
+                    shapes.addShape(st.getObj(i));
+                    st.del(i);
+                    --i;
+                }
+            }
+            st.add(shapes);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            st.remove_all();
+        }
+
+        private void bSave_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.Filter = "Text Files|*.txt";
+            saveFileDialog1.DefaultExt = ".txt";
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamWriter sw = new StreamWriter(saveFileDialog1.FileName))
+                {
+                    st.save(sw);
                 }
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void bLoad_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < st.count; i++)
-            {
-                if (st.getObj(i).Select())
-                {
-                    st.getObj(i).RePaint(2);
-                    st.getObj(i).Update();
-                }
-            }
-        }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < st.count; i++)
+            OpenFileDialog loadfile = new OpenFileDialog();
+            loadfile.DefaultExt = ".txt";
+            if (loadfile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (st.getObj(i).Select())
-                {
-                    st.getObj(i).RePaint(3);
-                    st.getObj(i).Update();
-                }
+                StreamReader sw = new StreamReader(loadfile.FileName);
+                st.remove_all();
+                st.load(sw);
+                sw.Close();
             }
         }
     }
